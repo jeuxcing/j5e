@@ -1,0 +1,53 @@
+[project]
+name = "j5e"
+version = "0.1"
+description = "Engine for jeuxcinqe"
+authors = [
+    {name = "Pierre Marijon", email = "pierre@marijon.fr"},
+]
+
+
+dependencies = ["pyserial"]
+dev-dependencies = []
+
+requires-python = ">=3.6"
+
+dynamic = ["classifiers"]
+
+license = {text = "MIT"}
+
+[project.urls]
+homepage = ""
+
+[tool.black]
+line-length = 79
+exclude = '''
+/(
+    \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+  | pdm/_vendor/*
+)/
+'''
+
+[tool.isort]
+profile = "black"
+atomic = true
+skip_glob = ["__pypackages__"]
+filter_files = true
+known_first_party = ["pdm"]
+known_third_party = []
+
+[tool.flake8]
+extend-exclude = "__pypackages__"
+
+[build-system]
+requires = ["pdm-pep517"]
+build-backend = "pdm.pep517.api"
