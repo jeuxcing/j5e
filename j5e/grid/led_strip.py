@@ -2,7 +2,7 @@ from enum import Enum
 
 NB_LEDS_SEGMENT = 24 
 NB_LEDS_RING = 12
-SIZE = 3 #3x3 prototype
+SIZE = 5
 NB_SEGMENTS=SIZE - 1
 
 class Segment():
@@ -55,7 +55,9 @@ class Ring():
         self.leds=rgb_colors
 
 class GridDims(Enum):
-    ROW=0, COL=1, RING=2        
+    ROW=0
+    COL=1
+    RING=2        
         
 class Grid():
     def __init__(self, size):
