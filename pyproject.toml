@@ -7,8 +7,10 @@ authors = [
 ]
 
 
-dependencies = ["pyserial"]
-dev-dependencies = []
+dependencies = [
+    "pyserial",
+    "zmq",
+]
 
 requires-python = ">=3.6"
 
@@ -48,6 +50,8 @@ known_third_party = []
 [tool.flake8]
 extend-exclude = "__pypackages__"
 
+
+[tool.pdm]
 [build-system]
 requires = ["pdm-pep517"]
 build-backend = "pdm.pep517.api"

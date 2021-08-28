@@ -2,30 +2,44 @@
 
 """Main for the arduino connection."""
 
-import time
-from collections import deque, defaultdict
-import logging
-import sys
-
-from .serial_device import SerialDevice, list_devices_connected
 import json
+import logging
+import socket
+import sys
+import time
+from collections import defaultdict, deque
 
-messages_from_devices = deque()
-messages_to_devices = defaultdict(lambda: deque(maxlen=1000))
-messages_exceptions = deque()
-connected_devices = {}
+from .primary_network import PrimaryNetwork
+from .secondary_network import SecondaryNetwork
+from .serial_device import SerialDevice, list_devices_connected
 
-HOSTNAME = "lovelace"
-
-logger = logging.getLogger('root')
+logger = logging.getLogger("root")
 FORMAT = (
-    '[%(asctime)s :: %(levelname)s '
-    '%(filename)s:%(lineno)s - %(funcName)10s() ]'
-    ' :: %(message)s'
+    "[%(asctime)s :: %(levelname)s "
+    "%(filename)s:%(lineno)s - %(funcName)10s() ]"
+    " :: %(message)s"
 )
 
 logging.basicConfig(format=FORMAT)
 logger.setLevel(logging.INFO)
+
+
+messages_from_devices = deque()
+messages_to_devices = defaultdict(lambda: deque(maxlen=1000))
+messages_exceptions = deque()
+
+primary_adress = "127.0.0.1"
+pn = PrimaryNetwork()
+pn.start()
+
+sn = SecondaryNetwork(
+    primary_adress, messages_to_devices, messages_from_devices
+)
+sn.start()
+
+HOSTNAME = socket.gethostname()
+connected_devices = {}
+
 
 def _main():
     serial_ids = ["758333139333512021D2"]
@@ -39,7 +53,7 @@ def _main():
             port,
             messages_from_devices,
             messages_to_devices,
-            messages_exceptions
+            messages_exceptions,
         )
 
         serial_device.start()
@@ -58,12 +72,14 @@ def main():
         print(messages_from_devices)
         connected_devices.pop(broken_device.port)
 
-    #messages_from_devices.append(
-    #    ["status", HOSTNAME, "connected devices", json.dumps({i: str(connected_devices[i]) for i in connected_devices})]
-    #)
-    logger.info(f"status {HOSTNAME} connected devices {json.dumps({i: str(connected_devices[i]) for i in connected_devices})}")
+    pn.messages_to_secondaries.append(("42", "CACA CACA"))
+        
+    logger.info(
+        f"status {HOSTNAME} connected devices {json.dumps({i: str(connected_devices[i]) for i in connected_devices})}"
+    )
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     while 1:
         try:
             main()

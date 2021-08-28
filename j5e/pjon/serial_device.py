@@ -5,18 +5,17 @@ This can be used to automatically connect to an arduino for instance.
 Used during 2016 zoomachine edition
 """
 
-import time
 import logging
+import time
 from threading import Thread
 
 import serial
 from serial.serialutil import SerialException
 from serial.tools import list_ports
 
-
 HEARTBEAT_INTERVAL = 4
 
-logger = logging.getLogger('root')
+logger = logging.getLogger("root")
 
 
 class SerialDeviceException(SerialException):
@@ -42,7 +41,9 @@ class SerialDevice(Thread):
     Serial Communication Protocol (SSCP), described in the documentation.
     """
 
-    def __init__(self, port, msg_in, msg_out: "defaultdict of iterables", msg_error):
+    def __init__(
+        self, port, msg_in, msg_out: "defaultdict of iterables", msg_error
+    ):
         """Inialise a serial device."""
         Thread.__init__(self)
 
@@ -113,7 +114,7 @@ class SerialDevice(Thread):
             txt = self.serial.readline().decode("ascii").strip()
 
         logger.info(f"message {txt}")
-        return txt.split(' ')[1]
+        return txt.split(" ")[1]
 
     def _connection_verification(self):
         # Wait for connection validation
@@ -145,7 +146,7 @@ class SerialDevice(Thread):
         logger.info("device id: {}".format(device_id))
         write_ret = self.serial.write(device_id.encode())
         self.serial.flush()
-        
+
         connected = self._connection_verification()
         if not connected:
             logger.debug(str(self))
@@ -168,11 +169,13 @@ class SerialDevice(Thread):
         text = self.serial.readline().decode("ascii").strip()
         if not text and "PONG !" not in text:
             self._disconnect()
-            logger.error("No heartbeat from arduino {}".format(self.device_id))
+            logger.error(f"No heartbeat from arduino {self.device_id} {text}")
             return False
 
         self.connected = True
-        logger.debug("Successful heartbeat with arduino " + str(self.device_id))
+        logger.debug(
+            "Successful heartbeat with arduino " + str(self.device_id)
+        )
         return True
 
     def read_from_device(self):
@@ -186,7 +189,9 @@ class SerialDevice(Thread):
         while self.serial.inWaiting():
             message = self.serial.readline()
             message = message.decode("ascii").strip()
-            logger.info("read from device {}: {}".format(self.device_id, message))
+            logger.info(
+                "read from device {}: {}".format(self.device_id, message)
+            )
             self.msg_in.append((self.device_id, message))
 
     def send_to_device(self):
@@ -196,15 +201,18 @@ class SerialDevice(Thread):
         The msg_out is a dictionnary of queues contenaing
         messages for each device and messages are the string
          transmitted to the arduino.
-        If the string doen't end with carriage return (\n) we add it.
         """
         msg_out = self.msg_out[self.device_id]
 
         while msg_out:
             msg = msg_out.pop()
-            if not msg.endswith('\n'):
-                msg += "\n"
-            logger.info("sending to the arduino {}: {}".format(self.device_id, msg))
+            logger.info(
+                f"sending to the arduino {self.device_id}: {len(msg)} {msg}"
+            )
+
+            msg_len_array = bytearray()
+            msg_len_array.append(len(msg))
+            self.serial.write(msg_len_array)
             self.serial.write(msg.encode())
             time.sleep(15e-3)
 
