@@ -72,7 +72,7 @@ def main():
         print(messages_from_devices)
         connected_devices.pop(broken_device.port)
 
-    pn.messages_to_secondaries.append(("42", "CACA CACA"))
+    pn.messages_to_secondaries.append((42, b"CACA CACA"))
         
     logger.info(
         f"status {HOSTNAME} connected devices {json.dumps({i: str(connected_devices[i]) for i in connected_devices})}"

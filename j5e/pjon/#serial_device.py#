@@ -123,6 +123,8 @@ class SerialDevice(Thread):
             time.sleep(0.01)
 
         # Verify the CONNECTED message
+        txt_length = int.from_bytes(self.serial.read(), "big")
+        txt = self.serial.read(txt_length).decode("ascii").strip()
         text = self.serial.readline().decode("ascii").strip()
         if not text:
             self._disconnect()

@@ -101,14 +101,10 @@ class SecondaryNetwork(Thread):
     def send_messages_to_primary(self):
         """Send messages in the outbox to the primary."""
         while self.messages_to_primary:
-            msg = self.messages_to_primary.popleft()
-            msg = [s.encode() for s in msg]
-            if b"status" in msg[0]:
-                logger.debug(f"sending status : {msg}")
-                self.sock_out_statuses.send_multipart(msg)
-            else:
-                logger.debug(f"sending {msg} to primary")
-                self.sock_out.send_multipart(msg)
+            msg = list(self.messages_to_primary.popleft())
+            print(f"msg {msg} type {type(msg)}")
+            msg[0] = bytes([msg[0]])
+            self.sock_out.send_multipart(msg)
 
     def receive_messages_from_primary(self):
         """Receive messages from the primary and populate the inbox for the correct device."""
