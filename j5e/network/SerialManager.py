@@ -1,10 +1,11 @@
 import subprocess as sp
 
 
-class SerialTCP:
+class SerialManager:
 
     def __init__(self):
         self.arduinos = {}
+        self.list_arduinos()
 
     def list_arduinos(self):
         # sys call to read kernel messages
@@ -21,6 +22,7 @@ class SerialTCP:
 
     def redirect(self, serial):
         cmd = ["sudo", "socat", f"/dev/{self.arduinos[serial]},b115200,raw,echo=0", "tcp-listen:5555"]
+        print(" ".join(cmd))
         val = sp.run(cmd, capture_output=True)
         print(val)
         print("ENDED")
