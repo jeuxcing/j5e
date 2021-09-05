@@ -1,4 +1,6 @@
+import time
 from j5e.network.Networks import Networks
+
 
 class Hypervisor:
 
@@ -7,4 +9,6 @@ class Hypervisor:
 
 
     def start(self):
-        pass
+        time.sleep(5)
+        print("pouet")
+        self.network.stop()
