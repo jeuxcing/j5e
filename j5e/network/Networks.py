@@ -20,6 +20,10 @@ class Networks:
         self.socket_client.start()
 
 
+    def send_to_wall(self, msg):
+        self.socket_client.send(msg);
+
+
     def stop(self):
         self.socket_client.stop()
         self.serial_manager.stop()

@@ -10,6 +10,7 @@ class SocketClient(Thread):
 
         self.port = 6000
         self.stopped = False
+        self.mailbox = []
 
 
     def port_event(self, event_name, attrs):
@@ -17,17 +18,38 @@ class SocketClient(Thread):
             self.port = attrs[1]
 
 
+    def send(self, msg):
+        self.mailbox.append(msg)
+
+
     def run(self):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+
             while not self.stopped:
                 try:
                     current_port = self.port
-                    val = sock.connect(("127.0.0.1", current_port))
+                    sock.setblocking(1)
+                    sock.connect(("127.0.0.1", current_port))
+                    sock.settimeout(0.01)
                     print(f"Socket opened on port {current_port}")
                     while current_port == self.port and not self.stopped:
-                        data = sock.recv(1024)
-                        print(data)
-                        time.sleep(0.1)
+                        # receive messages
+                        try:
+                            data = sock.recv(1024)
+                            print(data)
+                        except socket.timeout:
+                            pass
+
+                        # send messages
+                        if len(self.mailbox) > 0:
+                            messages = self.mailbox
+                            self.mailbox = []
+                            sock.setblocking(1)
+                            for msg in messages:
+                                print(f"sending: {msg}")
+                                sock.send(msg)
+                            sock.settimeout(0.01)
+
                 except ConnectionRefusedError:
                     print(f"Connexion refused on port {self.port}")
                     time.sleep(1)

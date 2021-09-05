@@ -58,9 +58,10 @@ class SerialManager(Thread):
                 function("disconnect", [self.serial_id, self.current_port])
 
             # change port
-            print(f"Port changed to {self.current_port}")
-            self.current_port = 5555 + ((self.current_port + 46) % 100)
-            time.sleep(1)
+            if not self.ended:
+                print(f"Port changed to {self.current_port}")
+                self.current_port = 5555 + ((self.current_port + 46) % 100)
+                time.sleep(1)
 
 
     def stop(self):
