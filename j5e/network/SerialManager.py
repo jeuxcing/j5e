@@ -13,6 +13,12 @@ class SerialManager(Thread):
         self.ended = False
         self.serial_id = serial_id
         self.redirector = None
+        self.on_event_functions = []
+
+
+    def add_handeling_function(self, function):
+        self.on_event_functions.append(function)
+
 
     def list_arduinos(self):
         # sys call to read kernel messages
@@ -44,8 +50,12 @@ class SerialManager(Thread):
 
             # redirect the flux
             self.redirect(self.serial_id, self.current_port)
+            for function in self.on_event_functions:
+                function("connect", [self.serial_id, self.current_port])
             while self.redirector.poll() is None:
                 time.sleep(1)
+            for function in self.on_event_functions:
+                function("disconnect", [self.serial_id, self.current_port])
 
             # change port
             print(f"Port changed to {self.current_port}")
