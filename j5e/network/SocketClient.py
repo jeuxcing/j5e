@@ -11,11 +11,16 @@ class SocketClient(Thread):
         self.port = 6000
         self.stopped = False
         self.mailbox = []
+        self.msg_handlers = []
 
 
     def port_event(self, event_name, attrs):
         if event_name == "connect":
             self.port = attrs[1]
+
+
+    def register_msg_handler(self, function):
+        self.msg_handlers.append(function)
 
 
     def send(self, msg):
@@ -34,19 +39,26 @@ class SocketClient(Thread):
                     print(f"Socket opened on port {current_port}")
                     while current_port == self.port and not self.stopped:
                         # receive messages
+                        data = None
                         try:
-                            data = sock.recv(1024)
-                            print(data)
+                            packet_size = sock.recv(1)
+                            data = sock.recv(packet_size)
                         except socket.timeout:
                             pass
 
-                        # send messages
+                        # Transmit data to handlers
+                        if data is not None:
+                            for function in self.msg_handlers:
+                                function(data)
+
+                        # send messages from the mailbox
                         if len(self.mailbox) > 0:
                             messages = self.mailbox
                             self.mailbox = []
                             sock.setblocking(1)
                             for msg in messages:
                                 print(f"sending: {msg}")
+                                sock.send(len(msg))
                                 sock.send(msg)
                             sock.settimeout(0.01)
 
