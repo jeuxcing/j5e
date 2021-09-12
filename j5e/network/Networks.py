@@ -18,7 +18,7 @@ class Networks:
     def __init__(self):
         # Init connections to the wall
         self.wall_serial_manager = SerialManager(Networks.wall_serial)
-        self.wall = SocketClient()
+        self.wall = SocketClient(verbose=True)
         # event handling
         self.wall_serial_manager.add_handeling_function(self.wall.port_event)
 

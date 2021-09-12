@@ -44,7 +44,7 @@ class SocketClient(Thread):
                         # receive messages
                         data = None
                         try:
-                            packet_size = sock.recv(1)
+                            packet_size = int.from_bytes(sock.recv(1), "big")
                             data = sock.recv(packet_size)
                         except socket.timeout:
                             pass
@@ -62,7 +62,7 @@ class SocketClient(Thread):
                             for msg in messages:
                                 if self.verbose:
                                     print(f"sending: {msg}")
-                                sock.send(len(msg))
+                                sock.send(bytes([len(msg)]))
                                 sock.send(msg)
                             sock.settimeout(0.01)
 
