@@ -66,7 +66,8 @@ class SerialManager(Thread):
                     print(f"Port changed to {self.current_port}")
                 self.current_port = 5555 + ((self.current_port + 46) % 100)
                 time.sleep(1)
-        print("Serial Closed")
+        if self.verbose:
+            print("Serial Closed")
 
 
     def stop(self):

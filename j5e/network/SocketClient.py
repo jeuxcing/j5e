@@ -25,6 +25,7 @@ class SocketClient(Thread):
 
 
     def send(self, msg):
+        print(len(msg), msg)
         self.mailbox.append(msg)
 
 
@@ -70,7 +71,8 @@ class SocketClient(Thread):
                         print(f"Connexion refused on port {self.port}")
                     time.sleep(1)
                     continue
-        print("Socket closed")
+        if self.verbose:
+            print("Socket closed")
 
     def stop(self):
         self.stopped = True

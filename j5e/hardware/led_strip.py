@@ -44,9 +44,9 @@ class Ring(Strip):
 
 
 class GridDims(Enum):
-    ROW = 0
-    COL = 1
-    RING = 2
+    ROW = ord('H') # H ascii
+    COL = ord('V') # V ascii
+    RING = ord('R') # R ascii
 
 
 class Grid:
@@ -68,24 +68,24 @@ class Grid:
             [Segment() for _ in range(nb_segments)] for _ in range(size)
         ]
         self.rings = [[Ring() for _ in range(size)] for _ in range(size)]
+
+        self.segments = {
+            GridDims.ROW : self.rows,
+            GridDims.COL : self.cols,
+            GridDims.RING : self.rings
+        }
+
         self.network = network
 
-    def set_color(self, axis, posx, posy, pos_seg, rgb):
-        # /!\ Achtung ! POSX POY NOT TESTED
-        if axis == GridDims.ROW:
-            self.rows[posx][posy].set_color(pos_seg, rgb)
-        elif axis == GridDims.COL:
-            self.cols[posx][posy].set_color(pos_seg, rgb)
-        else:
-            self.rings[posx][posy].set_color(pos_seg, rgb)
 
-    def get_color(self, axis, posx, posy, pos_seg):
-        # /!\ Achtung ! POSX POY NOT TESTED
-        if axis == GridDims.ROW:
-            return self.rows[posx][posy].get_color(pos_seg)
-        elif axis == GridDims.COL:
-            return self.cols[posx][posy].get_color(pos_seg)
-        else:
-            return self.rings[posx][posy].get_color(pos_seg)
+    def set_color(self, dimension, line_idx, segment_idx, led_idx, rgb):
+        self.network.wall.send(
+            bytes([ord('L'), dimension.value, line_idx, segment_idx, led_idx] + list(rgb))
+        )
+        self.segments[dimension][line_idx][segment_idx].set_color(led_idx, rgb)
+
+
+    def get_color(self, dimension, line_idx, segment_idx, led_idx):
+        return self.segments[dimension][line_idx][segment_idx].get_color(led_idx)
 
     

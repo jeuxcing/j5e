@@ -1,6 +1,6 @@
 import time
 from j5e.network.Networks import Networks
-from j5e.hardware.led_strip import Grid
+from j5e.hardware.led_strip import Grid, GridDims as gd
 
 
 class Hypervisor:
@@ -13,8 +13,8 @@ class Hypervisor:
 
 
     def start(self):
-        time.sleep(2)
-        # self.network.send_to_wall(b"Hello")
-        # time.sleep(3)
-        print("force closing")
+        self.grid.set_color(gd.ROW, 0, 0, 1, (20, 0, 0))
+        
+
+    def stop(self):
         self.network.stop()
