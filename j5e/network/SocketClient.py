@@ -5,13 +5,14 @@ from threading import Thread
 
 class SocketClient(Thread):
 
-    def __init__(self):
+    def __init__(self, verbose=False):
         super().__init__()
 
         self.port = 6000
         self.stopped = False
         self.mailbox = []
         self.msg_handlers = []
+        self.verbose = verbose
 
 
     def port_event(self, event_name, attrs):
@@ -36,7 +37,8 @@ class SocketClient(Thread):
                     sock.setblocking(1)
                     sock.connect(("127.0.0.1", current_port))
                     sock.settimeout(0.01)
-                    print(f"Socket opened on port {current_port}")
+                    if self.verbose:
+                        print(f"Socket opened on port {current_port}")
                     while current_port == self.port and not self.stopped:
                         # receive messages
                         data = None
@@ -57,13 +59,15 @@ class SocketClient(Thread):
                             self.mailbox = []
                             sock.setblocking(1)
                             for msg in messages:
-                                print(f"sending: {msg}")
+                                if self.verbose:
+                                    print(f"sending: {msg}")
                                 sock.send(len(msg))
                                 sock.send(msg)
                             sock.settimeout(0.01)
 
                 except ConnectionRefusedError:
-                    print(f"Connexion refused on port {self.port}")
+                    if self.verbose:
+                        print(f"Connexion refused on port {self.port}")
                     time.sleep(1)
                     continue
         print("Socket closed")

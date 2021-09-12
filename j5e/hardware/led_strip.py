@@ -1,9 +1,5 @@
 from enum import Enum
 
-NB_LEDS_SEGMENT = 24
-NB_LEDS_RING = 12
-SIZE = 5
-NB_SEGMENTS = SIZE - 1
 
 
 class Strip:
@@ -28,19 +24,23 @@ class Strip:
 
 
 class Segment(Strip):
-    def __init__(self, size=NB_LEDS_SEGMENT):
+    NB_LEDS = 24
+
+    def __init__(self, size=0):
         """
         size : taille du bandeau
         """
-        super(Segment, self).__init__(size)
+        super(Segment, self).__init__(size if size != 0 else Segment.NB_LEDS)
 
 
 class Ring(Strip):
-    def __init__(self, size=NB_LEDS_RING):
+    NB_LEDS = 12
+
+    def __init__(self, size=0):
         """
         size : taille de l'anneau
         """
-        super(Ring, self).__init__(size)
+        super(Ring, self).__init__(size if size != 0 else Ring.NB_LEDS)
 
 
 class GridDims(Enum):
@@ -50,17 +50,25 @@ class GridDims(Enum):
 
 
 class Grid:
-    def __init__(self, size):
+    SIZE = 5
+    # NB_SEGMENTS = Grid.SIZE - 1
+
+    def __init__(self, network, size=0):
         """
         size : taille de la grille
         """
+        if size == 0:
+            size = Grid.SIZE
+        nb_segments = size - 1
+
         self.rows = [
-            [Segment() for _ in range(NB_SEGMENTS)] for _ in range(size)
+            [Segment() for _ in range(nb_segments)] for _ in range(size)
         ]
         self.cols = [
-            [Segment() for _ in range(NB_SEGMENTS)] for _ in range(size)
+            [Segment() for _ in range(nb_segments)] for _ in range(size)
         ]
-        self.rings = [[Ring() for _ in range(SIZE)] for _ in range(SIZE)]
+        self.rings = [[Ring() for _ in range(size)] for _ in range(size)]
+        self.network = network
 
     def set_color(self, axis, posx, posy, pos_seg, rgb):
         # /!\ Achtung ! POSX POY NOT TESTED
@@ -79,3 +87,5 @@ class Grid:
             return self.cols[posx][posy].get_color(pos_seg)
         else:
             return self.rings[posx][posy].get_color(pos_seg)
+
+    

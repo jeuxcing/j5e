@@ -47,3 +47,10 @@ class Networks:
     def stop(self):
         self.wall_socket_client.stop()
         self.wall_serial_manager.stop()
+        self.ctrl_socket_client.stop()
+        self.ctrl_serial_manager.stop()
+
+        self.wall_socket_client.join()
+        self.wall_serial_manager.join()
+        self.ctrl_socket_client.join()
+        self.ctrl_serial_manager.join()

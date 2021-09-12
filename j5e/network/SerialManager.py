@@ -5,7 +5,7 @@ from threading import Thread
 
 class SerialManager(Thread):
 
-    def __init__(self, serial_id):
+    def __init__(self, serial_id, verbose=False):
         super().__init__()
         self.arduinos = {}
         self.list_arduinos()
@@ -14,6 +14,7 @@ class SerialManager(Thread):
         self.serial_id = serial_id
         self.redirector = None
         self.on_event_functions = []
+        self.verbose = verbose
 
 
     def add_handeling_function(self, function):
@@ -35,7 +36,8 @@ class SerialManager(Thread):
 
     def redirect(self, serial, port):
         cmd = ["sudo", "socat", f"/dev/{self.arduinos[serial]},b115200,raw,echo=0", f"tcp-listen:{port}"]
-        print(" ".join(cmd))
+        if self.verbose:
+            print(" ".join(cmd))
         self.redirector = sp.Popen(cmd)
 
 
@@ -44,7 +46,8 @@ class SerialManager(Thread):
             # find the arduino
             self.list_arduinos()
             if self.serial_id not in self.arduinos:
-                print(f"Arduino {self.serial_id} not plugged")
+                if self.verbose:
+                    print(f"Arduino {self.serial_id} not plugged")
                 time.sleep(1)
                 continue
 
@@ -52,16 +55,18 @@ class SerialManager(Thread):
             self.redirect(self.serial_id, self.current_port)
             for function in self.on_event_functions:
                 function("connect", [self.serial_id, self.current_port])
-            while self.redirector.poll() is None:
+            while self.redirector.poll() is None and not self.ended:
                 time.sleep(1)
             for function in self.on_event_functions:
                 function("disconnect", [self.serial_id, self.current_port])
 
             # change port
             if not self.ended:
-                print(f"Port changed to {self.current_port}")
+                if self.verbose:
+                    print(f"Port changed to {self.current_port}")
                 self.current_port = 5555 + ((self.current_port + 46) % 100)
                 time.sleep(1)
+        print("Serial Closed")
 
 
     def stop(self):
