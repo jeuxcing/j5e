@@ -13,8 +13,8 @@ class Hypervisor:
 
 
     def start(self):
-        self.grid.set_color(gd.ROW, 0, 0, 1, (20, 0, 0))
-        
+        pass
+
 
     def stop(self):
         self.network.stop()

@@ -20,6 +20,7 @@ if __name__ == "__main__":
     hypervisor = Hypervisor()
     hypervisor.start()
     print("Game started")
+    hypervisor.grid.run_test()
 
     signal.pause()
 
