@@ -10,11 +10,14 @@ class Hypervisor:
         # Time for all the networks to init
         time.sleep(3)
         self.grid = Grid(self.network)
+        self.game = Game(self.grid)
 
 
     def start(self):
-        pass
+        self.game.start()
 
 
     def stop(self):
+        self.game.stop()
+        self.game.join()
         self.network.stop()

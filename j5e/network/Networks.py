@@ -11,7 +11,7 @@ class Networks:
 
     # The following 2 values needs to be changed regarding the arduino used
     wall_serial = "75833313933351104032"
-    ctrl_serial = "POUET"
+    ctrl_serial = "17"
     # ctrl_serial = "758303339383511090A1"
 
 
