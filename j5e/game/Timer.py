@@ -13,7 +13,7 @@ class Timer(Thread):
         
     def run(self):
         i=0
-        while not self.stopped.wait(0.5):
+        while not self.stopped.wait(0.2):
             print(i,' : ')
             for element in self.elements:
                 element.go()
