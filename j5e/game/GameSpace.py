@@ -54,7 +54,7 @@ class GameSpace:
         # Within lines segments
         for line_idx in range(grid_size):
             for seg_idx in range(grid_size-1):
-                for led_idx in range(1, n_leds_segment-1):
+                for led_idx in range(1, n_leds_segment):
                     i = self.to_graph_node_index('line', line_idx, seg_idx, led_idx-1)
                     j = self.to_graph_node_index('line', line_idx, seg_idx, led_idx)
                     #print("i = ", i, " ; j = ", j)
@@ -62,14 +62,14 @@ class GameSpace:
         # Within columns segments
         for line_idx in range(grid_size):
             for seg_idx in range(grid_size-1):
-                for led_idx in range(1, n_leds_segment-1):
+                for led_idx in range(1, n_leds_segment):
                     i = self.to_graph_node_index('column', line_idx, seg_idx, led_idx-1)
                     j = self.to_graph_node_index('column', line_idx, seg_idx, led_idx)
                     self.graph.add_edge(i, j)
         # Within rings segments
         for line_idx in range(grid_size):
             for seg_idx in range(grid_size):
-                for led_idx in range(1, n_leds_ring-1):
+                for led_idx in range(1, n_leds_ring):
                     i = self.to_graph_node_index('ring', line_idx, seg_idx, led_idx-1)
                     j = self.to_graph_node_index('ring', line_idx, seg_idx, led_idx)
                     self.graph.add_edge(i, j)
@@ -93,10 +93,12 @@ class GameSpace:
                 led_ring_end = self.to_graph_node_index('ring', line_idx, seg_idx+1, 11)
                 self.graph.add_edge(led_strip_end, led_ring_end)
              
-        print("Printing nodes and edges")
-        print(list(self.graph.nodes))
-        print(list(self.graph.edges))
+        #print("Printing nodes and edges")
+        #print(list(self.graph.nodes))
+        #print(list(self.graph.edges))
         print("Neighbors of node 290 = ", list(self.graph.neighbors(290)))
+        print("Neighbors of node 22 = ", list(self.graph.neighbors(22)))
+        print("Neighbors of node 22 = ", list(self.graph.neighbors(23)))
         
         
     def to_graph_node_index(self, segment_type, segment_pos_x, segment_pos_y, position_in_seg):
@@ -185,5 +187,5 @@ class GameSpace:
 #gs = GameSpace(gr, 24, 12)
 gs = GameSpace()
 gs.init_graph(3, 24, 12)
-pos = ('line', 1, 1, 13, -1)
+pos = ('line', 0, 0, 22, 1)
 print(gs.get_next_position(pos))
