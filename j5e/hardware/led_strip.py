@@ -79,7 +79,7 @@ class Grid:
 
 
     def set_color(self, dimension, line_idx, segment_idx, led_idx, rgb):
-        self.network.wall.send(
+        self.network.wall.send_msg(
             bytes([ord('L'), dimension.value, line_idx, segment_idx, led_idx] + list(rgb))
         )
         self.segments[dimension][line_idx][segment_idx].set_color(led_idx, rgb)

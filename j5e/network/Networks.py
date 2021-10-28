@@ -10,28 +10,20 @@ class Networks:
     # 3 - read the last "SerialNumber"
 
     # The following 2 values needs to be changed regarding the arduino used
-    wall_serial = "75833313933351104032"
+    wall_serial = "758333139333512021D2"
     ctrl_serial = "POUET"
     # ctrl_serial = "758303339383511090A1"
 
 
     def __init__(self):
         # Init connections to the wall
-        self.wall_serial_manager = SerialManager(Networks.wall_serial)
-        self.wall = SocketClient(verbose=True)
-        # event handling
-        self.wall_serial_manager.add_handeling_function(self.wall.port_event)
+        self.wall = SerialManager(Networks.wall_serial, verbose=True)
 
         # Init connections to the controller
-        self.ctrl_serial_manager = SerialManager(Networks.ctrl_serial)
-        self.ctrl = SocketClient()
-        # event handling
-        self.ctrl_serial_manager.add_handeling_function(self.wall.port_event)
+        self.ctrl = SerialManager(Networks.ctrl_serial)
 
         # run threads
-        self.wall_serial_manager.start()
         self.wall.start()
-        self.ctrl_serial_manager.start()
         self.ctrl.start()
 
 
@@ -43,11 +35,7 @@ class Networks:
 
     def stop(self):
         self.wall.stop()
-        self.wall_serial_manager.stop()
         self.ctrl.stop()
-        self.ctrl_serial_manager.stop()
 
         self.wall.join()
-        self.wall_serial_manager.join()
         self.ctrl.join()
-        self.ctrl_serial_manager.join()
