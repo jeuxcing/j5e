@@ -42,15 +42,6 @@ class SerialManager(Thread):
                 serial = lines[idx-1].split(" ")[-1]
                 self.arduinos[serial] = port
 
-        # print(self.arduinos)
-
-
-    # def redirect(self, serial, port):
-    #     cmd = ["sudo", "socat", f"/dev/{self.arduinos[serial]},b115200,raw,echo=0", f"tcp-listen:{port}"]
-    #     if self.verbose:
-    #         print(" ".join(cmd))
-    #     self.redirector = sp.Popen(cmd)
-
 
     def run(self):
         acknowledged = True
@@ -70,9 +61,11 @@ class SerialManager(Thread):
                     self.serial = serial.Serial(f"/dev/{self.arduinos[self.serial_id]}", baudrate=115200)
                 except serial.serialutil.SerialException:
                     self.serial = None
+            # Communicate with arduinos
             else:
                 try:
-                    print("<", len(self.inbox), "   >", len(self.outbox))
+                    if len(self.inbox) > 10 or len(self.outbox) > 10:
+                        print("Mailbox warning: <", len(self.inbox), "   >", len(self.outbox))
                     # Write to device
                     if acknowledged and len(self.outbox) > 0:
                         msg = bytes([len(self.outbox[0])]) + self.outbox[0]
@@ -117,38 +110,8 @@ class SerialManager(Thread):
         if self.verbose:
             print("Serial Closed")
 
-    # def run(self):
-    #     while not self.ended:
-    #         # find the arduino
-    #         self.list_arduinos()
-    #         if self.serial_id not in self.arduinos:
-    #             if self.verbose:
-    #                 print(f"Arduino {self.serial_id} not plugged")
-    #             time.sleep(1)
-    #             continue
-
-    #         # redirect the flux
-    #         self.redirect(self.serial_id, self.current_port)
-    #         for function in self.on_event_functions:
-    #             function("connect", [self.serial_id, self.current_port])
-    #         while self.redirector.poll() is None and not self.ended:
-    #             time.sleep(1)
-    #         for function in self.on_event_functions:
-    #             function("disconnect", [self.serial_id, self.current_port])
-
-    #         # change port
-    #         if not self.ended:
-    #             if self.verbose:
-    #                 print(f"Port changed to {self.current_port}")
-    #             self.current_port = 5555 + ((self.current_port + 46) % 100)
-    #             time.sleep(1)
-    #     if self.verbose:
-    #         print("Serial Closed")
-
 
     def stop(self):
         self.ended = True
         if self.serial is not None:
             self.serial.close()
-        # if self.redirector is not None:
-        #     sp.run(["sudo", "pkill", "-9", "socat"])
