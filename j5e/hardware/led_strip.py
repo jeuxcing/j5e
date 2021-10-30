@@ -85,6 +85,14 @@ class Grid:
         self.segments[dimension][line_idx][segment_idx].set_color(led_idx, rgb)
 
 
+    def set_segment(self, dimension, line_idx, segment_idx, led_start_idx, led_stop_idx, rgb):
+        self.network.wall.send_msg(
+            bytes([ord('S'), dimension.value, line_idx, segment_idx, led_start_idx, led_stop_idx] + list(rgb))
+        )
+        for led_idx in range(led_start_idx, led_stop_idx+1):
+            self.segments[dimension][line_idx][segment_idx].set_color(led_idx, rgb)
+
+
     def get_color(self, dimension, line_idx, segment_idx, led_idx):
         return self.segments[dimension][line_idx][segment_idx].get_color(led_idx)
 
